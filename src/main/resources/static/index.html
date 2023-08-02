@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSV Upload and Ranking</title>
+    <!--Bootstrap-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f5f5f5;
+        }
+
+        .container-box {
+            background-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            margin: 30px auto;
+            padding: 30px;
+        }
+    </style>
+</head>
+<body class="container mt-5">
+<div class="container-box">
+    <div class="text-center">
+        <h2>Upload CSV File</h2>
+        <input type="file" id="csvFile" accept=".csv" class="mb-2">
+        <button onclick="uploadCSV()" class="btn btn-primary">Upload</button>
+    </div>
+
+    <div id="result" class="mt-5">
+        <h2 class="text-center">Ranking Result</h2>
+        <table class="table table-bordered table-striped">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Team Pair</th>
+                <th>Days working together</th>
+            </tr>
+            </thead>
+            <tbody id="rankingTableBody">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+        function uploadCSV() {
+            const formData = new FormData();
+            formData.append("file", $("#csvFile")[0].files[0]);
+
+            $.ajax({
+                url: "/upload",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(data) {
+                    displayRanking(data);
+                },
+                error: function(xhr, status, error) {
+                    alert("Error uploading CSV file: " + error);
+                }
+            });
+        }
+
+        function displayRanking(data) {
+            $("#rankingTableBody").empty();
+            $.each(data, function(index, entry) {
+                console.log(index, entry);
+                $("#rankingTableBody").append("<tr><td>" + (index + 1) + "</td><td>" +  Object.keys(entry)[0] + "</td><td>" +  Object.values(entry)[0] + "</td></tr>");
+            });
+
+            $("#result").show();
+        }
+    </script>
+</body>
+</html>
