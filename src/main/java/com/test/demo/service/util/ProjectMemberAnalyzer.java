@@ -9,10 +9,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -27,7 +24,7 @@ public class ProjectMemberAnalyzer {
         return mapToPersonPeriod(new InputStreamReader(file.getInputStream()));
     }
 
-    public Map<String, Long> calculateProjectDurations(List<PersonPeriod> personPeriods) {
+    public List<Map.Entry<String, Long>> calculateProjectDurations(List<PersonPeriod> personPeriods) {
         Map<String, Long> projectDurations = new HashMap<>();
         Map<Integer, List<PersonPeriod>> projectMembersMap = personPeriods.stream()
                 .collect(Collectors.groupingBy(PersonPeriod::getProjectId));
@@ -36,7 +33,7 @@ public class ProjectMemberAnalyzer {
             calculateOverlappingDurations(projectDurations, projectMembers);
         }
 
-        return projectDurations;
+        return getSortedScoreListDesc(projectDurations);
     }
 
     private void calculateOverlappingDurations(Map<String, Long> projectDurations, List<PersonPeriod> projectMembers) {
@@ -57,6 +54,14 @@ public class ProjectMemberAnalyzer {
                 }
             }
         }
+    }
+
+    private List<Map.Entry<String, Long>> getSortedScoreListDesc(Map<String, Long> projectMemberDurations) {
+        List<Map.Entry<String, Long>> scoreList = projectMemberDurations.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue())
+                .collect(Collectors.toList());
+        Collections.reverse(scoreList);
+        return scoreList;
     }
 
     private List<PersonPeriod> mapToPersonPeriod(Reader reader) {

@@ -22,17 +22,17 @@ class DemoApplicationTests {
 	void testCSVProcessing() {
 		try{
 			List<PersonPeriod> personPeriods = analyzer.readCSV(CSV_FILE_PATH);
-			Map<String, Long> projectDurations = analyzer.calculateProjectDurations(personPeriods);
+			List<Map.Entry<String, Long>> projectDurations = analyzer.calculateProjectDurations(personPeriods);
 			printPeriods(projectDurations);
 		} catch (Exception e) {
 			Assertions.fail("No file found for testing at " + CSV_FILE_PATH);
 		}
 	}
 
-	private static void printPeriods(Map<String, Long> projectDurations) {
+	private static void printPeriods(List<Map.Entry<String, Long>> projectDurations) {
 		System.out.println("Project members with the overlapping duration they worked together:");
-		projectDurations.forEach((projectMembers, durationInDays) -> {
-			System.out.println("Project Members: " + projectMembers + ", Duration in Days: " + durationInDays);
+		projectDurations.forEach(entry -> {
+			System.out.println("Project Members: " + entry.getKey() + ", Duration in Days: " + entry.getValue());
 		});
 	}
 

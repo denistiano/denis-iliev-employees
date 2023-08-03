@@ -8,7 +8,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class EmployeeCalculationService {
@@ -18,15 +17,7 @@ public class EmployeeCalculationService {
 
     public List<Map.Entry<String, Long>> rankEmployeePairs(MultipartFile csvFile) throws IOException {
         List<PersonPeriod> personPeriods = analyzer.readCSV(csvFile);
-
-        Map<String, Long> projectMemberDurations = analyzer.calculateProjectDurations(personPeriods);
-
-        List<Map.Entry<String, Long>> scoreList = projectMemberDurations.entrySet().stream()
-                .sorted(Map.Entry.comparingByValue())
-                .collect(Collectors.toList());
-        Collections.reverse(scoreList);
-
-        return scoreList;
+        return analyzer.calculateProjectDurations(personPeriods);
     }
 
 }
